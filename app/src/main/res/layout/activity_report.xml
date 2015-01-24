@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/reportlayoutcontainer">
+
+        <TextView
+            android:id="@+id/reportdatelabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Time and Date"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5pt"/>
+
+        <TextView
+            android:id="@+id/reportdatetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="12pt"
+            android:text="date"/>
+
+        <TextView
+            android:id="@+id/imageText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No image taken"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="1pt"
+            android:layout_marginTop="10pt"/>
+
+            <!--android:src="@android:drawable/editbox_dropdown_dark_frame"-->
+        <ImageView
+            android:layout_width="50pt"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5pt"
+            android:layout_marginTop="5pt"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/imageView1"
+            android:adjustViewBounds="true" />
+
+        <Button
+            android:id="@+id/reportbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:height="30pt"
+            android:width="160pt"
+            android:layout_gravity="center_horizontal"
+            android:text="Add a photo"
+            android:onClick="addPhoto"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="7.5pt">
+
+            <Button
+                android:id="@+id/observationbutton"
+                android:layout_width="80pt"
+                android:layout_height="30pt"
+                android:text="Situation type"
+                android:onClick="chooseSituationType"/>
+
+            <Button
+                android:id="@+id/prioritybutton"
+                android:layout_width="80pt"
+                android:layout_height="30pt"
+                android:text="Set Priority"
+                android:onClick="choosePriority"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/descriptionbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:height="30pt"
+            android:width="160pt"
+            android:layout_gravity="center_horizontal"
+            android:text="Add a Description (Optional)"
+            android:onClick="setDescription"/>
+
+        <TextView
+            android:id="@+id/reportgpslabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Location"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10pt"/>
+
+        <TextView
+            android:id="@+id/reportgpstext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:textSize="12pt"
+            android:text="Finding location..."/>
+
+        <Button
+            android:id="@+id/sendreportbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:height="30pt"
+            android:width="160pt"
+            android:layout_marginTop="10pt"
+            android:layout_gravity="center_horizontal"
+            android:text="Send Report (Mail)"
+            android:onClick="sendReport"/>
+
+    </LinearLayout>
+</ScrollView>
