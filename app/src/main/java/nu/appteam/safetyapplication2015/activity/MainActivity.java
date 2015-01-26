@@ -3,6 +3,7 @@ package nu.appteam.safetyapplication2015.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -10,7 +11,7 @@ import android.view.View;
 
 import nu.appteam.safetyapplication2015.R;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     // Constructor.
     @Override

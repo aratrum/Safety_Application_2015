@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <ScrollView
-        android:layout_height="fill_parent"
+    <ScrollView xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="fill_parent"
         android:layout_width="fill_parent"
+    android:background="@color/background_material_dark"
+
         xmlns:android="http://schemas.android.com/apk/res/android">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/reportlayoutcontainer">
+            android:id="@+id/reportlayoutcontainer"
+
+            >
 
         <TextView
             android:id="@+id/reportdatelabel"
@@ -16,7 +20,9 @@
             android:layout_height="wrap_content"
             android:text="Current Time and Date"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5pt"/>
+            android:layout_marginTop="10pt"
+            android:textColor="@color/abc_primary_text_material_dark"
+            />
 
         <TextView
             android:id="@+id/reportdatetext"
@@ -25,7 +31,8 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:textSize="12pt"
-            android:text="date"/>
+            android:text="date"
+            android:textColor="@color/abc_primary_text_material_dark"/>
 
         <TextView
             android:id="@+id/imageText1"
@@ -34,7 +41,8 @@
             android:text="No image taken"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="1pt"
-            android:layout_marginTop="10pt"/>
+            android:layout_marginTop="10pt"
+            android:textColor="@color/abc_primary_text_material_dark"/>
 
             <!--android:src="@android:drawable/editbox_dropdown_dark_frame"-->
         <ImageView
@@ -86,7 +94,8 @@
             android:width="160pt"
             android:layout_gravity="center_horizontal"
             android:text="Add a Description (Optional)"
-            android:onClick="setDescription"/>
+            android:onClick="setDescription"
+            />
 
         <TextView
             android:id="@+id/reportgpslabel"
@@ -94,7 +103,8 @@
             android:layout_height="wrap_content"
             android:text="Current Location"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10pt"/>
+            android:layout_marginTop="10pt"
+            android:textColor="@color/abc_primary_text_material_dark"/>
 
         <TextView
             android:id="@+id/reportgpstext"
@@ -103,7 +113,17 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:textSize="12pt"
-            android:text="Finding location..."/>
+            android:text="Finding location..."
+            android:textColor="@color/abc_primary_text_material_dark"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100pt"
+            android:layout_marginBottom="5pt"
+            android:layout_marginTop="5pt"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/mapImageView"
+            android:adjustViewBounds="true" />
 
         <Button
             android:id="@+id/sendreportbutton"

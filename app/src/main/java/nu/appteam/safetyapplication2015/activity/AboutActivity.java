@@ -2,16 +2,16 @@ package nu.appteam.safetyapplication2015.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 
 import nu.appteam.safetyapplication2015.R;
 
-public class AboutActivity extends Activity {
+public class AboutActivity extends ActionBarActivity {
 
     // Constructor.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

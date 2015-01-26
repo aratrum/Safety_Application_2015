@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:safetyapplication2015="http://schemas.android.com/apk/res-auto">
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_bar_user"
         android:title="User"
-        android:showAsAction="never" />
+        safetyapplication2015:showAsAction="never" />
 
     <item android:id="@+id/action_bar_settings"
         android:title="Settings"
-        android:showAsAction="never" />
+        safetyapplication2015:showAsAction="never" />
 
     <item android:id="@+id/action_bar_about"
         android:title="About"
-        android:showAsAction="never" />
+        safetyapplication2015:showAsAction="never" />
 </menu>

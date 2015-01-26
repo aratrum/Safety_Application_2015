@@ -1,12 +1,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="nu.appteam.safetyapplication2015">
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- PERMISSIONS -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- APPLICATION -->
     <application android:allowBackup="true" android:label="@string/app_name"
         android:icon="@drawable/ic_launcher" android:theme="@style/AppTheme">
+
+        <!-- META DATA -->
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyCepc9on8Nex1XbubTtQxIFLYFCFurt-jo" />
+
+        <!-- ACTIVITIES -->
         <activity android:name="nu.appteam.safetyapplication2015.activity.MainActivity"
-            android:label="SAFOBS">
+            android:label="SAFOBS"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -15,7 +28,8 @@
         <activity
             android:name="nu.appteam.safetyapplication2015.activity.AboutActivity"
             android:label="About AppTeam ..."
-            android:parentActivityName="nu.appteam.safetyapplication2015.activity.MainActivity">
+            android:parentActivityName="nu.appteam.safetyapplication2015.activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nu.appteam.safetyapplication2015.activity.MainActivity" />
@@ -23,7 +37,8 @@
         <activity
             android:name="nu.appteam.safetyapplication2015.activity.ReportActivity"
             android:label="Report a situation ..."
-            android:parentActivityName="nu.appteam.safetyapplication2015.activity.MainActivity">
+            android:parentActivityName="nu.appteam.safetyapplication2015.activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nu.appteam.safetyapplication2015.activity.MainActivity" />

@@ -5,13 +5,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -20,16 +25,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import nu.appteam.safetyapplication2015.R;
 
-public class ReportActivity extends Activity {
+public class ReportActivity extends ActionBarActivity {
 
     // Members.
     private Date date;
@@ -41,14 +55,19 @@ public class ReportActivity extends Activity {
     private String description;
     private double latitude;
     private double longitude;
-    private GoogleMap map;
+    private int zoom = 19;
 
     // Constructor.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (android.os.Build.VERSION.SDK_INT > 9)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         date = new Date();
         df = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
@@ -56,10 +75,16 @@ public class ReportActivity extends Activity {
         TextView dateText = (TextView) findViewById(R.id.reportdatetext);
         dateText.setText(df.format(date));
 
+        ImageView mapImage = (ImageView) findViewById(R.id.mapImageView);
+        mapImage.setVisibility(View.GONE);
+
         // Use the LocationManager class to obtain GPS locations
         LocationManager location_mgr = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         LocationListener location_listener = new ReportLocationListener();
-        location_mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, location_listener);
+        location_mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 10, location_listener);
+        Log.d("LOCATIONMANAGER", location_mgr.toString());
+        Log.d("LOCATIONLISTENER", location_listener.toString());
+        Log.d("Location Provider status", Context.LOCATION_SERVICE);
     }
 
     // Activates after the camera app closes. Display the captured image on screen.
@@ -208,7 +233,8 @@ public class ReportActivity extends Activity {
                 "Situation type: " + situation_type +
                 "\nReport priority: " + priority +
                 "\nDescription (optional): " + description) +
-                "\nLocation (Lat/Long): " + latitude + " / " + longitude
+                "\nLocation (Lat/Long): " + latitude + " / " + longitude +
+                "\nhttp://maps.google.com/?ie=UTF8&hq=&ll=" + latitude + "," + longitude + "&z=" + zoom
         );
 
         i.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///mnt/sdcard/" + photo_filename));
@@ -227,33 +253,66 @@ public class ReportActivity extends Activity {
 
     // ReportLocationListener class. Gets the users current lat and long using GPS and WIFI signals.
     public class ReportLocationListener implements LocationListener {
+
         TextView txt = (TextView) findViewById(R.id.reportgpstext);
+        ImageView mapImage = (ImageView) findViewById(R.id.mapImageView);
 
-        @Override
-        public void onLocationChanged(Location loc) {
+    @Override
+    public void onLocationChanged(Location loc) {
 
-            latitude = loc.getLatitude();
-            longitude = loc.getLongitude();
-            String location = "Lat = " + latitude + "\nLong = " + longitude;
+        Log.d("location provider", "location changed!");
 
-            // Display location
-            txt.setText(location);
+        latitude = loc.getLatitude();
+        longitude = loc.getLongitude();
+        String location = "Lat = " + latitude + "\nLong = " + longitude;
+
+        String google_map_link = "https://maps.googleapis.com/maps/api/staticmap?center=" +
+                latitude + "," + longitude + "&zoom=19&size=500x350&maptype=hybrid&scale=1" +
+                "&markers=color:red%7C"+ latitude + "," + longitude;
+
+        Bitmap bmp = null;
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpGet request = new HttpGet(google_map_link);
+
+        InputStream in = null;
+        try {
+            in = httpclient.execute(request).getEntity().getContent();
+            bmp = BitmapFactory.decodeStream(in);
+            in.close();
+        } catch (IllegalStateException e) {
+            Log.d("EXCEPTION", "Illegal state exception caught!");
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            Log.d("EXCEPTION", "Client protocol exception caught!");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.d("EXCEPTION", "IO exception caught!");
+            e.printStackTrace();
         }
 
-        @Override
-        public void onProviderDisabled(String provider) {
-            Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
-        }
+        // Display location
+        txt.setText(location);
+        txt.setVisibility(View.GONE);
 
-        @Override
-        public void onProviderEnabled(String provider) {
-            Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
+        mapImage.setVisibility(View.VISIBLE);
+        mapImage.setImageBitmap(bmp);
 
     }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("location provider", "disabled!");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("location provider", "enabled!");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("location provider", "status changed!");
+    }
+
+}
 }
