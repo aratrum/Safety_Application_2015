@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,6 +39,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 import nu.appteam.safetyapplication2015.R;
 
@@ -56,6 +58,8 @@ public class ReportActivity extends ActionBarActivity {
     private double longitude;
     private int zoom = 19;
 
+    private int report_ID;
+
     // Constructor.
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,10 @@ public class ReportActivity extends ActionBarActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+        Random rng = new Random();
+
+        report_ID = rng.nextInt(Integer.MAX_VALUE);
 
         date = new Date();
         df = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -99,6 +107,10 @@ public class ReportActivity extends ActionBarActivity {
         Button btn = (Button) findViewById(R.id.btn_report_photo);
         btn.setText("Photo added (Tap to change)");
         btn.setTextColor(Color.GREEN);
+
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(photo_URI);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     // Create a camera image and save it to the sdcard.
@@ -110,16 +122,22 @@ public class ReportActivity extends ActionBarActivity {
 
         // Save the captured image on the sdcard.
         DateFormat df = new SimpleDateFormat("HHmmssddMMyyyy");
-        String new_photo_filename = df.format(date) + ".jpg";
+        String new_photo_filename = report_ID + "_photo.jpg";
         photo_filename = new_photo_filename;
-        String output_path = "/sdcard/" + new_photo_filename;
+        String output_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
 
-        File output_file = new File(output_path);
+        File output_file = new File(output_path, new_photo_filename);
         photo_URI = Uri.fromFile(output_file);
+
+
 
         // Start the action.
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photo_URI);
         startActivityForResult(intent, 0);
+
+
+
+        //MediaScannerConnection.scanFile(getApplicationContext(), new String[]{output_file.toString()}, null, null);
     }
 
     // Create the popup-dialog for the observation type.
@@ -228,18 +246,20 @@ public class ReportActivity extends ActionBarActivity {
                 situation_type + " Report (" + df.format(date) + ")"
         );
 
-        i.putExtra(Intent.EXTRA_TEXT,(
-                "Situation type: " + situation_type +
-                "\nReport priority: " + priority +
-                "\nDescription (optional): " + description) +
-                "\nLocation (Lat/Long): " + latitude + " / " + longitude +
-                "\nhttp://maps.google.com/?ie=UTF8&hq=&ll=" + latitude + "," + longitude + "&z=" + zoom
-        );
+        //i.putExtra(Intent.EXTRA_TEXT, "Situation type: " + situation_type + "\nReport priority: " + priority + "\nDescription (optional): " + description + "\nLocation (Lat/Long): " + latitude + " / " + longitude + "\nhttp://maps.google.com/?ie=UTF8&hq=&ll=" + latitude + "," + longitude + "&z=19");
+        i.putExtra(Intent.EXTRA_TEXT, "Test");
 
         ArrayList<Uri> uris = new ArrayList<Uri>();
 
-        uris.add(Uri.parse("file:///mnt/sdcard/" + photo_filename));
-        uris.add(Uri.parse("file:///mnt/sdcard/" + location_filename));
+        String directory = "file://" + Environment.getExternalStorageDirectory().toString() + "/SAFOBS/Pictures/";
+        //String directory = "file:///mnt/sdcard/SAFOBS/Pictures/";
+
+
+        uris.add(Uri.parse(directory + report_ID + "_photo.jpg"));
+        uris.add(Uri.parse(directory + report_ID + "_location.jpg"));
+
+        Log.d("URI ARRAY 0", uris.get(0).toString());
+        Log.d("URI ARRAY 1", uris.get(1).toString());
 
         i.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
@@ -308,14 +328,19 @@ public class ReportActivity extends ActionBarActivity {
         mapImage.setVisibility(View.VISIBLE);
         mapImage.setImageBitmap(bmp);
 
-        String root = Environment.getExternalStorageDirectory().toString();
+        String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
         File myDir = new File(root);
 
-        location_filename = "location-"+ photo_filename +".jpg";
-        File file = new File (myDir, location_filename);
-        if (file.exists ()) file.delete ();
+
+
+        location_filename = report_ID + "_location.jpg";
+        File location_img = new File (myDir, location_filename);
+
+        MediaScannerConnection.scanFile(getApplicationContext(), new String[]{location_img.toString()}, null, null);
+
+        if (location_img.exists ()) location_img.delete ();
         try {
-            FileOutputStream out = new FileOutputStream(file);
+            FileOutputStream out = new FileOutputStream(location_img);
             bmp.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
