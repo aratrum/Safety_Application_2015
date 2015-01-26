@@ -2,6 +2,20 @@
 <resources>
 
     <string name="app_name">SafetyApplication</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- BUTTON TEXTS -->
+    <string name="btn_addphoto_text"> Add a Photo </string>
+    <string name="btn_situation_text"> Situation Type </string>
+    <string name="btn_priority_text"> Set Priority </string>
+    <string name="btn_description_text"> Add a Description (Optional) </string>
+    <string name="btn_sendreport_text"> Send Report (Mail) </string>
+
+    <!-- LABEL TEXTS -->
+    <string name="lbl_report_date"> Current Time and Date </string>
+    <string name="lbl_img"> No image taken </string>
+    <string name="lbl_report_location"> Current location </string>
+    <string name="lbl_report_location_updating"> Finding location . . . </string>
+    <string name="lbl_img_photo_description"> Report photo </string>
+    <string name="lbl_img_location_description"> GoogleMap static image </string>
 
 </resources>

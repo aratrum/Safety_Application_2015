@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="observation_list">
+    <string-array name="situationtype_list">
         <item>Unsafe Act</item>
         <item>Unsafe Procedure</item>
         <item>Unsafe Situation</item>

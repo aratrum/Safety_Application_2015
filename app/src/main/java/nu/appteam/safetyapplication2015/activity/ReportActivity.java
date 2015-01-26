@@ -1,6 +1,5 @@
 package nu.appteam.safetyapplication2015.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -31,14 +31,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import nu.appteam.safetyapplication2015.R;
@@ -49,6 +47,7 @@ public class ReportActivity extends ActionBarActivity {
     private Date date;
     private DateFormat df;
     private String photo_filename;
+    private String location_filename;
     private Uri photo_URI;
     private String situation_type;
     private String priority;
@@ -70,12 +69,12 @@ public class ReportActivity extends ActionBarActivity {
         }
 
         date = new Date();
-        df = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+        df = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
-        TextView dateText = (TextView) findViewById(R.id.reportdatetext);
+        TextView dateText = (TextView) findViewById(R.id.lbl_report_date);
         dateText.setText(df.format(date));
 
-        ImageView mapImage = (ImageView) findViewById(R.id.mapImageView);
+        ImageView mapImage = (ImageView) findViewById(R.id.img_report_location);
         mapImage.setVisibility(View.GONE);
 
         // Use the LocationManager class to obtain GPS locations
@@ -91,13 +90,13 @@ public class ReportActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        ImageView img = (ImageView) findViewById(R.id.imageView1);
+        ImageView img = (ImageView) findViewById(R.id.img_report_photo);
         img.setImageURI(photo_URI);
 
-        TextView txt = (TextView) findViewById(R.id.imageText1);
+        TextView txt = (TextView) findViewById(R.id.lbl_report_image);
         txt.setVisibility(View.GONE);
 
-        Button btn = (Button) findViewById(R.id.reportbutton);
+        Button btn = (Button) findViewById(R.id.btn_report_photo);
         btn.setText("Photo added (Tap to change)");
         btn.setTextColor(Color.GREEN);
     }
@@ -129,13 +128,13 @@ public class ReportActivity extends ActionBarActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         // Specify the dialog options.
-        builder.setItems(R.array.observation_list,
+        builder.setItems(R.array.situationtype_list,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int index) {
 
                         // Specify the actions after an item has been pressed.
-                        Button btn = (Button) findViewById(R.id.observationbutton);
-                        String[] observationList = getResources().getStringArray(R.array.observation_list);
+                        Button btn = (Button) findViewById(R.id.btn_report_situationtype);
+                        String[] observationList = getResources().getStringArray(R.array.situationtype_list);
                         String selectedItem = observationList[index];
 
                         situation_type = selectedItem;
@@ -164,7 +163,7 @@ public class ReportActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int index) {
 
                         // Specify the actions after an item has been pressed.
-                        Button btn = (Button) findViewById(R.id.prioritybutton);
+                        Button btn = (Button) findViewById(R.id.btn_report_priority);
                         String[] priorityList = getResources().getStringArray(R.array.priority_list);
                         String selectedItem = priorityList[index];
 
@@ -197,10 +196,10 @@ public class ReportActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // Save the description.
-                        EditText txt = (EditText)v.findViewById(R.id.descriptiontextbox);
+                        EditText txt = (EditText)v.findViewById(R.id.txt_description_box);
                         description = txt.getText().toString();
 
-                        Button btn = (Button) findViewById(R.id.descriptionbutton);
+                        Button btn = (Button) findViewById(R.id.btn_report_description);
                         btn.setText("Description added (Tap to change)");
                         btn.setTextColor(Color.GREEN);
 
@@ -221,7 +220,7 @@ public class ReportActivity extends ActionBarActivity {
     // Mail activity_report data to a given email adress.
     private void mailReportTo(String recipient){
 
-        Intent i = new Intent(Intent.ACTION_SEND);
+        Intent i = new Intent(Intent.ACTION_SEND_MULTIPLE);
         i.setType("message/rfc822");
         i.putExtra(Intent.EXTRA_EMAIL, new String[]{recipient});
 
@@ -237,7 +236,15 @@ public class ReportActivity extends ActionBarActivity {
                 "\nhttp://maps.google.com/?ie=UTF8&hq=&ll=" + latitude + "," + longitude + "&z=" + zoom
         );
 
-        i.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///mnt/sdcard/" + photo_filename));
+        ArrayList<Uri> uris = new ArrayList<Uri>();
+
+        uris.add(Uri.parse("file:///mnt/sdcard/" + photo_filename));
+        uris.add(Uri.parse("file:///mnt/sdcard/" + location_filename));
+
+        i.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+        /*i.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///mnt/sdcard/" + photo_filename));
+        i.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///mnt/sdcard/" + location_filename));*/
         try {
             startActivity(i);
             //startActivity(Intent.createChooser(i, "Send mail..."));
@@ -254,8 +261,8 @@ public class ReportActivity extends ActionBarActivity {
     // ReportLocationListener class. Gets the users current lat and long using GPS and WIFI signals.
     public class ReportLocationListener implements LocationListener {
 
-        TextView txt = (TextView) findViewById(R.id.reportgpstext);
-        ImageView mapImage = (ImageView) findViewById(R.id.mapImageView);
+        TextView txt = (TextView) findViewById(R.id.lbl_report_location);
+        ImageView mapImage = (ImageView) findViewById(R.id.img_report_location);
 
     @Override
     public void onLocationChanged(Location loc) {
@@ -266,9 +273,13 @@ public class ReportActivity extends ActionBarActivity {
         longitude = loc.getLongitude();
         String location = "Lat = " + latitude + "\nLong = " + longitude;
 
-        String google_map_link = "https://maps.googleapis.com/maps/api/staticmap?center=" +
-                latitude + "," + longitude + "&zoom=19&size=500x350&maptype=hybrid&scale=1" +
-                "&markers=color:red%7C"+ latitude + "," + longitude;
+        String google_map_link = "https://maps.googleapis.com/maps/api/staticmap?"
+                + "center=" + latitude + "," + longitude
+                + "&zoom=15"
+                + "&size=500x350"
+                + "&maptype=roadmap"
+                + "&scale=5"
+                + "&markers=color:red%7C"+ latitude + "," + longitude;
 
         Bitmap bmp = null;
         HttpClient httpclient = new DefaultHttpClient();
@@ -296,6 +307,22 @@ public class ReportActivity extends ActionBarActivity {
 
         mapImage.setVisibility(View.VISIBLE);
         mapImage.setImageBitmap(bmp);
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root);
+
+        location_filename = "location-"+ photo_filename +".jpg";
+        File file = new File (myDir, location_filename);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

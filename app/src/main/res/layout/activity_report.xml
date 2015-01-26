@@ -1,140 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <ScrollView xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="fill_parent"
+    <ScrollView
+        android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-    android:background="@color/background_material_dark"
-
+        android:background="@color/background_material_dark"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
             android:orientation="vertical"
+
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/reportlayoutcontainer"
+            android:layout_height="wrap_content">
 
-            >
+            <!-- CURRENT DATE AND TIME LABEL -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-        <TextView
-            android:id="@+id/reportdatelabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Current Time and Date"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10pt"
-            android:textColor="@color/abc_primary_text_material_dark"
-            />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10pt"
 
-        <TextView
-            android:id="@+id/reportdatetext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:textSize="12pt"
-            android:text="date"
-            android:textColor="@color/abc_primary_text_material_dark"/>
+                android:text="@string/lbl_report_date"
+                android:textColor="@color/abc_primary_text_material_dark"
+                />
 
-        <TextView
-            android:id="@+id/imageText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No image taken"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="1pt"
-            android:layout_marginTop="10pt"
-            android:textColor="@color/abc_primary_text_material_dark"/>
+            <!-- DATE AND TIME -->
+            <TextView android:id="@+id/lbl_report_date"
 
-            <!--android:src="@android:drawable/editbox_dropdown_dark_frame"-->
-        <ImageView
-            android:layout_width="50pt"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5pt"
-            android:layout_marginTop="5pt"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/imageView1"
-            android:adjustViewBounds="true" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-        <Button
-            android:id="@+id/reportbutton"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+
+                android:textSize="12pt"
+                android:textColor="@color/abc_primary_text_material_dark"
+                />
+
+            <!-- NO IMAGE TAKEN LABEL -->
+            <TextView android:id="@+id/lbl_report_image"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="1pt"
+                android:layout_marginTop="10pt"
+
+                android:text="@string/lbl_img"
+                android:textColor="@color/abc_primary_text_material_dark"
+                />
+
+            <!-- PHOTO IMAGE VIEW -->
+            <ImageView android:id="@+id/img_report_photo"
+
+                android:layout_width="50pt"
+                android:layout_height="wrap_content"
+
+                android:layout_marginBottom="5pt"
+                android:layout_marginTop="5pt"
+                android:layout_gravity="center_horizontal"
+
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/lbl_img_photo_description"
+                />
+
+            <!-- ADD PHOTO BUTTON -->
+            <Button android:id="@+id/btn_report_photo"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:height="30pt"
+                android:width="160pt"
+
+                android:layout_gravity="center_horizontal"
+
+                android:text="@string/btn_addphoto_text"
+                android:onClick="addPhoto"
+                />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="7.5pt"
+                android:paddingRight="7.5pt">
+
+                <!-- SITUATIONTYPE BUTTON -->
+                <Button android:id="@+id/btn_report_situationtype"
+
+                    android:layout_width="80pt"
+                    android:layout_height="30pt"
+
+                    android:text="@string/btn_situation_text"
+                    android:onClick="chooseSituationType"
+                    />
+
+                <!-- PRIORITY BUTTON -->
+                <Button android:id="@+id/btn_report_priority"
+
+                    android:layout_width="80pt"
+                    android:layout_height="30pt"
+
+                    android:text="@string/btn_priority_text"
+                    android:onClick="choosePriority"
+                    />
+
+            </LinearLayout>
+
+            <!-- DESCRIPTION BUTTON -->
+            <Button android:id="@+id/btn_report_description"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:height="30pt"
             android:width="160pt"
+
             android:layout_gravity="center_horizontal"
-            android:text="Add a photo"
-            android:onClick="addPhoto"/>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="7.5pt">
-
-            <Button
-                android:id="@+id/observationbutton"
-                android:layout_width="80pt"
-                android:layout_height="30pt"
-                android:text="Situation type"
-                android:onClick="chooseSituationType"/>
-
-            <Button
-                android:id="@+id/prioritybutton"
-                android:layout_width="80pt"
-                android:layout_height="30pt"
-                android:text="Set Priority"
-                android:onClick="choosePriority"/>
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/descriptionbutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:height="30pt"
-            android:width="160pt"
-            android:layout_gravity="center_horizontal"
-            android:text="Add a Description (Optional)"
+            android:text="@string/btn_description_text"
             android:onClick="setDescription"
             />
 
-        <TextView
-            android:id="@+id/reportgpslabel"
+            <!-- CURRENT LOCATION LABEL -->
+            <TextView
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Location"
+
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10pt"
+
+            android:text="@string/lbl_report_location"
             android:textColor="@color/abc_primary_text_material_dark"/>
 
-        <TextView
-            android:id="@+id/reportgpstext"
+            <!-- FINDING LOCATION LABEL -->
+            <TextView android:id="@+id/lbl_report_location"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:layout_gravity="center_horizontal"
             android:gravity="center"
+
             android:textSize="12pt"
-            android:text="Finding location..."
-            android:textColor="@color/abc_primary_text_material_dark"/>
+            android:text="@string/lbl_report_location_updating"
+            android:textColor="@color/abc_primary_text_material_dark"
+            />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="100pt"
-            android:layout_marginBottom="5pt"
-            android:layout_marginTop="5pt"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/mapImageView"
-            android:adjustViewBounds="true" />
+            <!-- LOCATION IMAGE VIEW -->
+            <ImageView android:id="@+id/img_report_location"
 
-        <Button
-            android:id="@+id/sendreportbutton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="5pt"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="10pt"
+                android:paddingRight="10pt"
+
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/lbl_img_location_description"
+            />
+
+            <!-- SEND REPORT BUTTON -->
+            <Button
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:height="30pt"
             android:width="160pt"
+
             android:layout_marginTop="10pt"
+            android:layout_marginBottom="5pt"
             android:layout_gravity="center_horizontal"
-            android:text="Send Report (Mail)"
-            android:onClick="sendReport"/>
+
+            android:text="@string/btn_sendreport_text"
+            android:onClick="sendReport"
+            />
 
     </LinearLayout>
+
 </ScrollView>
