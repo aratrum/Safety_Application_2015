@@ -1,10 +1,7 @@
 package nu.appteam.safetyapplication2015.activity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -25,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        createDirectories();
+        createApplicationDirectory();
     }
 
     // Create the action bar menu.
@@ -56,22 +53,22 @@ public class MainActivity extends ActionBarActivity {
     }
 
     // Do something when the activity_report button has been pressed.
-    public void reportSituation(View view){
+    public void startReportActivity(View view){
 
         Intent intent = new Intent(this, ReportActivity.class);
         startActivity(intent);
     }
 
-    private void createDirectories() {
+    private void createApplicationDirectory() {
 
         String root = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File myDir = new File(root + "/SAFOBS/Pictures/app//");
+        File picture_dir = new File(root + "/SAFOBS/Pictures/app//");
 
-        Log.d("Directory path", myDir.getPath());
+        Log.d("Picture path", picture_dir.getPath());
 
-        if (!myDir.exists()) {
+        if (!picture_dir.exists()) {
             try {
-                if (myDir.mkdirs()) {
+                if (picture_dir.mkdirs()) {
                     Log.d("Directory", "Directory is created!");
                 } else {
                     Log.d("Directory", "Failed to create directory!");
@@ -81,9 +78,24 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        File data_dir = new File(root + "/SAFOBS/Saved Reports/app//");
 
-        //called after writing file, from my activity
-        MediaScannerConnection.scanFile(this, new String[] {myDir.toString()}, null, null);
+        Log.d("Data path", data_dir.getPath());
+
+        if (!data_dir.exists()) {
+            try {
+                if (data_dir.mkdirs()) {
+                    Log.d("Directory", "Directory is created!");
+                } else {
+                    Log.d("Directory", "Failed to create directory!");
+                }
+            } catch (Exception e) {
+                Log.d("exception", e.toString());
+            }
+        }
+
+        MediaScannerConnection.scanFile(this, new String[]{picture_dir.toString()}, null, null);
+        MediaScannerConnection.scanFile(this, new String[]{data_dir.toString()}, null, null);
 
     }
 }

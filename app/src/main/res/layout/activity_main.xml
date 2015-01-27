@@ -16,7 +16,7 @@
         android:layout_marginLeft="10pt"
         android:layout_marginTop="10pt"
         android:text="Report Situation"
-        android:onClick="reportSituation"/>
+        android:onClick="startReportActivity"/>
 
 </LinearLayout>
 

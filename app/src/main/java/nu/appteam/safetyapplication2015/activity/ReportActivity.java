@@ -39,26 +39,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
+import controller.ReportDataController;
 import nu.appteam.safetyapplication2015.R;
 
 public class ReportActivity extends ActionBarActivity {
 
-    // Members.
-    private Date date;
-    private DateFormat df;
-    private String photo_filename;
-    private String location_filename;
-    private Uri photo_URI;
-    private String situation_type;
-    private String priority;
-    private String description;
-    private double latitude;
-    private double longitude;
-    private int zoom = 19;
-
-    private int report_ID;
+    ReportDataController data;
 
     // Constructor.
     @Override
@@ -66,21 +53,16 @@ public class ReportActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
+        data = new ReportDataController(this);
+
         if (android.os.Build.VERSION.SDK_INT > 9)
         {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
 
-        Random rng = new Random();
-
-        report_ID = rng.nextInt(Integer.MAX_VALUE);
-
-        date = new Date();
-        df = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-
         TextView dateText = (TextView) findViewById(R.id.lbl_report_date);
-        dateText.setText(df.format(date));
+        dateText.setText(data.report.getProperty("Date"));
 
         ImageView mapImage = (ImageView) findViewById(R.id.img_report_location);
         mapImage.setVisibility(View.GONE);
@@ -89,17 +71,14 @@ public class ReportActivity extends ActionBarActivity {
         LocationManager location_mgr = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         LocationListener location_listener = new ReportLocationListener();
         location_mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 10, location_listener);
-        Log.d("LOCATIONMANAGER", location_mgr.toString());
-        Log.d("LOCATIONLISTENER", location_listener.toString());
-        Log.d("Location Provider status", Context.LOCATION_SERVICE);
     }
 
     // Activates after the camera app closes. Display the captured image on screen.
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
         ImageView img = (ImageView) findViewById(R.id.img_report_photo);
-        img.setImageURI(photo_URI);
+        img.setImageURI(Uri.parse(data.report.getProperty("Photo URI")));
 
         TextView txt = (TextView) findViewById(R.id.lbl_report_image);
         txt.setVisibility(View.GONE);
@@ -109,7 +88,7 @@ public class ReportActivity extends ActionBarActivity {
         btn.setTextColor(Color.GREEN);
 
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        mediaScanIntent.setData(photo_URI);
+        mediaScanIntent.setData(Uri.parse(data.report.getProperty("Photo URI")));
         this.sendBroadcast(mediaScanIntent);
     }
 
@@ -122,17 +101,15 @@ public class ReportActivity extends ActionBarActivity {
 
         // Save the captured image on the sdcard.
         DateFormat df = new SimpleDateFormat("HHmmssddMMyyyy");
-        String new_photo_filename = report_ID + "_photo.jpg";
-        photo_filename = new_photo_filename;
-        String output_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
+        /*String new_photo_filename = data.report.getProperty("ID") + "_photo.jpg";
+        data.report.getProperty("Photo Filename") = new_photo_filename;*/
 
-        File output_file = new File(output_path, new_photo_filename);
-        photo_URI = Uri.fromFile(output_file);
+        //String output_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
 
+        File photo = new File(data.report.getProperty("Output Path"), data.report.getProperty("Photo Filename"));
+        data.report.setProperty("Photo URI", "" + Uri.fromFile(photo) + "");
 
-
-        // Start the action.
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, photo_URI);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(data.report.getProperty("Photo URI")));
         startActivityForResult(intent, 0);
 
 
@@ -155,7 +132,7 @@ public class ReportActivity extends ActionBarActivity {
                         String[] observationList = getResources().getStringArray(R.array.situationtype_list);
                         String selectedItem = observationList[index];
 
-                        situation_type = selectedItem;
+                        data.report.setProperty("Situation Type", selectedItem);
 
                         Toast toast = Toast.makeText(getApplicationContext(), (selectedItem + " selected."), Toast.LENGTH_SHORT);
                         btn.setText(selectedItem);
@@ -185,7 +162,7 @@ public class ReportActivity extends ActionBarActivity {
                         String[] priorityList = getResources().getStringArray(R.array.priority_list);
                         String selectedItem = priorityList[index];
 
-                        priority = selectedItem;
+                        data.report.setProperty("Priority", selectedItem);
 
                         Toast toast = Toast.makeText(getApplicationContext(), (selectedItem + " selected."), Toast.LENGTH_SHORT);
                         btn.setText(selectedItem + " priority");
@@ -215,7 +192,8 @@ public class ReportActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         // Save the description.
                         EditText txt = (EditText)v.findViewById(R.id.txt_description_box);
-                        description = txt.getText().toString();
+
+                        data.report.setProperty("Description", txt.getText().toString());
 
                         Button btn = (Button) findViewById(R.id.btn_report_description);
                         btn.setText("Description added (Tap to change)");
@@ -243,7 +221,7 @@ public class ReportActivity extends ActionBarActivity {
         i.putExtra(Intent.EXTRA_EMAIL, new String[]{recipient});
 
         i.putExtra(Intent.EXTRA_SUBJECT,
-                situation_type + " Report (" + df.format(date) + ")"
+                data.report.getProperty("Situation Type") + " Report (" + data.report.getProperty("Date") + ")"
         );
 
         //i.putExtra(Intent.EXTRA_TEXT, "Situation type: " + situation_type + "\nReport priority: " + priority + "\nDescription (optional): " + description + "\nLocation (Lat/Long): " + latitude + " / " + longitude + "\nhttp://maps.google.com/?ie=UTF8&hq=&ll=" + latitude + "," + longitude + "&z=19");
@@ -251,12 +229,13 @@ public class ReportActivity extends ActionBarActivity {
 
         ArrayList<Uri> uris = new ArrayList<Uri>();
 
-        String directory = "file://" + Environment.getExternalStorageDirectory().toString() + "/SAFOBS/Pictures/";
+        // String directory = "file://" + Environment.getExternalStorageDirectory().toString() + "/SAFOBS/Pictures/";
         //String directory = "file:///mnt/sdcard/SAFOBS/Pictures/";
 
 
-        uris.add(Uri.parse(directory + report_ID + "_photo.jpg"));
-        uris.add(Uri.parse(directory + report_ID + "_location.jpg"));
+        uris.add(Uri.parse("file://" + data.report.getProperty("Output Path") + data.report.getProperty("Photo Filename")));
+        uris.add(Uri.parse("file://" + data.report.getProperty("Output Path") + data.report.getProperty("Location Filename")));
+        //uris.add(Uri.parse(directory + data.report.getProperty("ID") + "_location.jpg"));
 
         Log.d("URI ARRAY 0", uris.get(0).toString());
         Log.d("URI ARRAY 1", uris.get(1).toString());
@@ -275,7 +254,17 @@ public class ReportActivity extends ActionBarActivity {
 
     // Send the activity_report.
     public void sendReport(View view){
-        mailReportTo("robbert@appteam.nu");
+
+        if(data.checkReport()) {
+
+            data.saveReportDataToDisk();
+
+            Toast.makeText(getApplicationContext(), "Report saved to disk!", Toast.LENGTH_SHORT).show();
+            //mailReportTo("robbert@appteam.nu");
+
+        }else{
+            Toast.makeText(getApplicationContext(), "The report is not yet complete!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // ReportLocationListener class. Gets the users current lat and long using GPS and WIFI signals.
@@ -289,17 +278,19 @@ public class ReportActivity extends ActionBarActivity {
 
         Log.d("location provider", "location changed!");
 
-        latitude = loc.getLatitude();
-        longitude = loc.getLongitude();
-        String location = "Lat = " + latitude + "\nLong = " + longitude;
+        data.report.setProperty("Latitude", "" + loc.getLatitude() + "");
+        data.report.setProperty("Longitude", "" + loc.getLongitude() + "");
+
+        double lat = Double.parseDouble(data.report.getProperty("Latitude"));
+        double lon = Double.parseDouble(data.report.getProperty("Longitude"));
 
         String google_map_link = "https://maps.googleapis.com/maps/api/staticmap?"
-                + "center=" + latitude + "," + longitude
+                + "center=" + lat + "," + lon
                 + "&zoom=15"
                 + "&size=500x350"
                 + "&maptype=roadmap"
                 + "&scale=5"
-                + "&markers=color:red%7C"+ latitude + "," + longitude;
+                + "&markers=color:red%7C"+ lat + "," + lon;
 
         Bitmap bmp = null;
         HttpClient httpclient = new DefaultHttpClient();
@@ -322,19 +313,15 @@ public class ReportActivity extends ActionBarActivity {
         }
 
         // Display location
-        txt.setText(location);
         txt.setVisibility(View.GONE);
 
         mapImage.setVisibility(View.VISIBLE);
         mapImage.setImageBitmap(bmp);
 
-        String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
-        File myDir = new File(root);
+        //String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
+        File myDir = new File(data.report.getProperty("Output Path"));
 
-
-
-        location_filename = report_ID + "_location.jpg";
-        File location_img = new File (myDir, location_filename);
+        File location_img = new File (myDir, data.report.getProperty("Location Filename"));
 
         MediaScannerConnection.scanFile(getApplicationContext(), new String[]{location_img.toString()}, null, null);
 

@@ -19,7 +19,8 @@
         <!-- ACTIVITIES -->
         <activity android:name="nu.appteam.safetyapplication2015.activity.MainActivity"
             android:label="SAFOBS"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -29,7 +30,8 @@
             android:name="nu.appteam.safetyapplication2015.activity.AboutActivity"
             android:label="About AppTeam ..."
             android:parentActivityName="nu.appteam.safetyapplication2015.activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nu.appteam.safetyapplication2015.activity.MainActivity" />
@@ -38,7 +40,8 @@
             android:name="nu.appteam.safetyapplication2015.activity.ReportActivity"
             android:label="Report a situation ..."
             android:parentActivityName="nu.appteam.safetyapplication2015.activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nu.appteam.safetyapplication2015.activity.MainActivity" />
