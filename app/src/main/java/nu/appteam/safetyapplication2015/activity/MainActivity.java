@@ -14,6 +14,7 @@ import android.view.View;
 import java.io.File;
 
 import nu.appteam.safetyapplication2015.R;
+import service.LocationService;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -23,6 +24,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createApplicationDirectory();
+
+        Intent intent = new Intent(this, LocationService.class);
+        startService(intent);
     }
 
     // Create the action bar menu.
