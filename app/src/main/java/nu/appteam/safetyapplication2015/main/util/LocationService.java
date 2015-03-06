@@ -1,4 +1,4 @@
-package service;
+package nu.appteam.safetyapplication2015.main.util;
 
 import android.app.Service;
 import android.content.Context;
@@ -14,8 +14,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
-
-import controller.DataController;
 
 public class LocationService extends Service {
 
@@ -96,7 +94,7 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, " -- Starting Location Service -- ", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, " -- Starting Location Service -- ", Toast.LENGTH_SHORT).show();
 
         // For each start request, send a message to start a job and deliver the
         // start ID so we know which request we're stopping when we finish the job

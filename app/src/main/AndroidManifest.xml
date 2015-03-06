@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- APPLICATION -->
     <application
         android:allowBackup="true"
@@ -23,8 +24,40 @@
 
         <!-- ACTIVITIES -->
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".main.MainMenuActivity"
             android:label="SAFOBS"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
+        </activity>
+        <activity
+            android:name=".main.AboutActivity"
+            android:label="About AppTeam ..."
+            android:parentActivityName=".main.MainMenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name=".main.ReportActivity"
+            android:label="Report a situation ..."
+            android:parentActivityName=".main.MainMenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.MainMenuActivity" />
+        </activity>
+
+        <service
+            android:name=".main.util.LocationService"
+            android:exported="false" >
+        </service>
+
+        <activity
+            android:name=".main.StartupActivity"
+            android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
             <intent-filter>
@@ -34,30 +67,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.AboutActivity"
-            android:label="About AppTeam ..."
-            android:parentActivityName=".activity.MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
+            android:name=".main.SettingsActivity"
+            android:label="Settings"
+            android:parentActivityName=".main.MainMenuActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="nu.appteam.safetyapplication2015.activity.MainActivity" />
+                android:value=".main.MainMenuActivity" />
         </activity>
-        <activity
-            android:name=".activity.ReportActivity"
-            android:label="Report a situation ..."
-            android:parentActivityName=".activity.MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="nu.appteam.safetyapplication2015.activity.MainActivity" />
-        </activity>
-
-        <service
-            android:name="service.LocationService"
-            android:exported="false" >
-        </service>
     </application>
 
 </manifest>

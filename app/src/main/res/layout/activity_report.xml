@@ -122,7 +122,7 @@
             android:onClick="setDescription"
             />
 
-            <!-- CURRENT LOCATION LABEL -->
+            <!--
             <TextView
 
             android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
             android:text="@string/lbl_report_location"
             android:textColor="@color/abc_primary_text_material_dark"/>
 
-            <!-- FINDING LOCATION LABEL -->
+
             <TextView android:id="@+id/lbl_report_location"
 
             android:layout_width="wrap_content"
@@ -148,7 +148,6 @@
             android:textColor="@color/abc_primary_text_material_dark"
             />
 
-            <!-- LOCATION IMAGE VIEW -->
             <ImageView android:id="@+id/img_report_location"
 
                 android:layout_width="match_parent"
@@ -162,6 +161,8 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/lbl_img_location_description"
             />
+
+            -->
 
             <!-- SEND REPORT BUTTON -->
             <Button

@@ -1,4 +1,4 @@
-package controller;
+package nu.appteam.safetyapplication2015.main.util;
 
 import android.os.Environment;
 import android.util.Log;

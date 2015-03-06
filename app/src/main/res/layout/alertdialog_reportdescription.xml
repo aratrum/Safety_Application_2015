@@ -6,7 +6,7 @@
     <EditText
         android:layout_width="150pt"
         android:id="@+id/txt_description_box"
-        android:layout_height="wrap_content"
+        android:layout_height="25pt"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15pt"/>
 
