@@ -2,17 +2,32 @@ package nu.appteam.safetyapplication2015.main;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import nu.appteam.safetyapplication2015.R;
+import nu.appteam.safetyapplication2015.main.util.DataController;
 
 public class SettingsActivity extends ActionBarActivity {
+
+    DataController dc = DataController.getInstance();
+    private TextView currentManager;
+    private EditText textField;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        currentManager = (TextView) findViewById(R.id.lbl_current_manager);
+        currentManager.setText(dc.managerEmail);
+
+        textField = (EditText) findViewById(R.id.txt_email_field);
     }
 
 
@@ -36,5 +51,11 @@ public class SettingsActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void saveEmailAddress(View view){
+        // Save the description.
+        dc.managerEmail = textField.getText().toString();
+        currentManager.setText(dc.managerEmail);
     }
 }

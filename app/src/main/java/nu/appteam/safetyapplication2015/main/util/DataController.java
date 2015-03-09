@@ -13,12 +13,14 @@ public class DataController {
     public int ID;
     public double latitude, longitude = 0;
     public String date, situationType, priority, description,
-            photoFilename, locationFilename, photoURI, dataPath, outputPath;
+            photoFilename, locationFilename,
+            photoURI, dataPath, outputPath, managerEmail;
 
     private static DataController instance = null;
 
     protected DataController() {
         // Exists only to defeat instantiation.
+        managerEmail = "robbert@appteam.nu";
         init();
     }
 

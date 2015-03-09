@@ -5,7 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,8 +35,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import nu.appteam.safetyapplication2015.main.util.DataController;
@@ -39,8 +42,12 @@ import nu.appteam.safetyapplication2015.R;
 
 public class ReportActivity extends ActionBarActivity {
 
-    //ReportDataController data;
+    // Class Members.
     DataController dc = DataController.getInstance();
+    static int REQUEST_IMAGE_CAPTURE = 100;
+    ImageView img;
+    TextView img_txt, date_txt;
+    Button btn_situation, btn_priority, btn_description;
 
     // Constructor.
     @Override
@@ -48,71 +55,97 @@ public class ReportActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
-        // Start the location Service
-        /**
-        Intent intent = new Intent(this, LocationService.class);
-        startService(intent);
-         */
-
         if (android.os.Build.VERSION.SDK_INT > 9)
         {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
 
-        TextView dateText = (TextView) findViewById(R.id.lbl_report_date);
-        dateText.setText(dc.date);
+        initViewAndListeners();
+    }
 
-        /**
-        ImageView mapImage = (ImageView) findViewById(R.id.img_report_location);
-        mapImage.setVisibility(View.GONE);
-         */
+    // Initialise the Views and their dedicated Listeners.
+    private void initViewAndListeners(){
 
-        // Get the location image.
-        /**
-        saveLocationBitmap();
-        */
+        img = (ImageView)findViewById(R.id.img_report_photo);
+        img.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //img.setImageResource(R.drawable.ic_camera_google_clicked);
+                startPictureIntent();
+            }
+        });
 
+        img_txt = (TextView) findViewById(R.id.myImageViewText);
+
+        date_txt = (TextView) findViewById(R.id.lbl_report_date);
+        date_txt.setText(dc.date);
+
+        btn_situation = (Button) findViewById(R.id.btn_report_situationtype);
+        btn_situation.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setSituationType();
+            }
+        });
+
+        btn_priority = (Button) findViewById(R.id.btn_report_priority);
+        btn_priority.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setPriority();
+            }
+        });
+
+        btn_description = (Button) findViewById(R.id.btn_report_description);
+        btn_description.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setDescription();
+            }
+        });
+
+    }
+
+    // Create a camera image and save it to the sdcard.
+    private void startPictureIntent() {
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+
+            // Save the captured image on the sdcard.
+            File photo = new File(dc.outputPath, dc.photoFilename);
+            dc.photoURI = "" + Uri.fromFile(photo) + "";
+
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(dc.photoURI));
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     // Activates after the camera app closes. Display the captured image on screen.
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        ImageView img = (ImageView) findViewById(R.id.img_report_photo);
-        img.setImageURI(Uri.parse(dc.photoURI));
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-        TextView txt = (TextView) findViewById(R.id.lbl_report_image);
-        txt.setVisibility(View.GONE);
+            Uri imageUri = Uri.parse(dc.photoURI);
 
-        Button btn = (Button) findViewById(R.id.btn_report_photo);
-        btn.setText("Photo added (Tap to change)");
-        btn.setTextColor(Color.argb(255, 10, 200, 10));
+            try {
+
+                Bitmap imageBitmap = roundBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri), 300);
+                img.setImageBitmap(imageBitmap);
+                img_txt.setText("Tap to change");
+
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
 
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(Uri.parse(dc.photoURI));
         this.sendBroadcast(mediaScanIntent);
     }
 
-    // Create a camera image and save it to the sdcard.
-    public void addPhoto(View view){
-
-        // Launch the default camera app.
-        Intent intent = new Intent();
-        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // Save the captured image on the sdcard.
-        DateFormat df = new SimpleDateFormat("HHmmssddMMyyyy");
-
-        File photo = new File(dc.outputPath, dc.photoFilename);
-        dc.photoURI = "" + Uri.fromFile(photo) + "";
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(dc.photoURI));
-        startActivityForResult(intent, 0);
-    }
-
     // Create the popup-dialog for the observation type.
-    public void chooseSituationType(View view){
+    public void setSituationType(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -122,15 +155,14 @@ public class ReportActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int index) {
 
                         // Specify the actions after an item has been pressed.
-                        Button btn = (Button) findViewById(R.id.btn_report_situationtype);
                         String[] observationList = getResources().getStringArray(R.array.situationtype_list);
                         String selectedItem = observationList[index];
 
                         dc.situationType = selectedItem;
 
                         Toast toast = Toast.makeText(getApplicationContext(), (selectedItem + " selected."), Toast.LENGTH_SHORT);
-                        btn.setText(selectedItem);
-                        btn.setTextColor(Color.argb(255, 10, 200, 10));
+                        btn_situation.setText(selectedItem);
+                        btn_situation.setTextColor(Color.argb(255, 10, 200, 10));
 
                         toast.show();
                     }
@@ -142,7 +174,7 @@ public class ReportActivity extends ActionBarActivity {
     }
 
     // Create the popup-dialog for the observation type.
-    public void choosePriority(View view){
+    public void setPriority(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -152,15 +184,14 @@ public class ReportActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int index) {
 
                         // Specify the actions after an item has been pressed.
-                        Button btn = (Button) findViewById(R.id.btn_report_priority);
                         String[] priorityList = getResources().getStringArray(R.array.priority_list);
                         String selectedItem = priorityList[index];
 
                         dc.priority = selectedItem;
 
                         Toast toast = Toast.makeText(getApplicationContext(), (selectedItem + " selected."), Toast.LENGTH_SHORT);
-                        btn.setText(selectedItem + " priority");
-                        btn.setTextColor(Color.argb(255, 10, 200, 10));
+                        btn_priority.setText(selectedItem + " priority");
+                        btn_priority.setTextColor(Color.argb(255, 10, 200, 10));
                         toast.show();
                     }
                 });
@@ -171,7 +202,7 @@ public class ReportActivity extends ActionBarActivity {
     }
 
     // Create the popup for the activity_report description.
-    public void setDescription(View view){
+    public void setDescription(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -185,13 +216,11 @@ public class ReportActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // Save the description.
-                        EditText txt = (EditText)v.findViewById(R.id.txt_description_box);
+                        EditText textbox = (EditText) v.findViewById(R.id.txt_description_box);
+                        dc.description = textbox.getText().toString();
 
-                        dc.description = txt.getText().toString();
-
-                        Button btn = (Button) findViewById(R.id.btn_report_description);
-                        btn.setText("Description added (Tap to change)");
-                        btn.setTextColor(Color.argb(255, 10, 200, 10));
+                        btn_description.setText("Description added (Tap to change)");
+                        btn_description.setTextColor(Color.argb(255, 10, 200, 10));
 
                         dialog.dismiss();
                     }
@@ -256,7 +285,7 @@ public class ReportActivity extends ActionBarActivity {
             dc.saveReportDataToDisk();
 
             Toast.makeText(getApplicationContext(), "Report saved to disk!", Toast.LENGTH_SHORT).show();
-            mailReportTo("robbert@appteam.nu");
+            mailReportTo(dc.managerEmail);
 
         }else{
             Toast.makeText(getApplicationContext(), "The report is not yet complete!", Toast.LENGTH_SHORT).show();
@@ -265,12 +294,8 @@ public class ReportActivity extends ActionBarActivity {
         dc.init();
     }
 
+    // Get the Google Maps picture of the current position.
     private void saveLocationBitmap(){
-
-        /**
-        TextView txt = (TextView) findViewById(R.id.lbl_report_location);
-        ImageView mapImage = (ImageView) findViewById(R.id.img_report_location);
-        */
 
         String google_map_link = "https://maps.googleapis.com/maps/api/staticmap?"
                 + "center=" + dc.latitude + "," + dc.longitude
@@ -300,15 +325,6 @@ public class ReportActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
-        // Display location
-        /**
-        txt.setVisibility(View.GONE);
-
-        mapImage.setVisibility(View.VISIBLE);
-        mapImage.setImageBitmap(bmp);
-
-         */
-
         //String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SAFOBS/Pictures/";
         File myDir = new File(dc.outputPath);
 
@@ -326,5 +342,33 @@ public class ReportActivity extends ActionBarActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Rounds the edges of a Bitmap.
+    private Bitmap roundBitmap(Bitmap bmp, int radius) {
+
+        Bitmap scaledBm;
+        if(bmp.getWidth() != radius || bmp.getHeight() != radius)
+            scaledBm = Bitmap.createScaledBitmap(bmp, radius, radius, false);
+        else
+            scaledBm = bmp;
+        Bitmap output = Bitmap.createBitmap(scaledBm.getWidth(),
+                scaledBm.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, scaledBm.getWidth(), scaledBm.getHeight());
+
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.parseColor("#BAB399"));
+        canvas.drawCircle(scaledBm.getWidth() / 2+0.7f, scaledBm.getHeight() / 2+0.7f,
+                scaledBm.getWidth() / 2+0.1f, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(scaledBm, rect, rect, paint);
+
+        return output;
     }
 }
